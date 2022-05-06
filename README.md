@@ -1,4 +1,5 @@
-# 批量生成solana 钱包助记词 和地址
+# 批量生成sol 助记词和地址
+# generation of sol  mnemonic and wallet addresses
 
 功能：
 
