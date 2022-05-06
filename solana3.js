@@ -1,6 +1,7 @@
 const {
     derivePath
 } = require('ed25519-hd-key')
+
 const web3 = require("@solana/web3.js")
 const bs58 = require('bs58')
 const _ = require('lodash')
@@ -10,6 +11,7 @@ const {
     json
 } = require('express/lib/response')
 const path = require('path')
+const { exit } = require('process')
 
 
 async function generateMnemonicAndSeed() {
@@ -25,7 +27,7 @@ async function generateMnemonicAndSeed() {
 function create(mnemonic, newSeed, count) {
     let json_res = {
         "助记词": mnemonic,
-        "newSeed": newSeed,
+        "seed": newSeed,
         "secret": []
     }
     for (var i = 0; i < count; i++) {
@@ -69,6 +71,10 @@ async function gen_type2(count) {
 function gen_data_by_type(num, mode) {
 
     if (mode == 1) {
+        if(num>2000){
+            console.error("单助记词模式数量不能大于1000")
+            return
+        }
         generateMnemonicAndSeed().then(
             (result) => {
                 let all_keys = create(result.mnemonic, result.seed, count)
@@ -96,6 +102,15 @@ function gen_data_by_type(num, mode) {
 
 
 let args = process.argv.slice(2)
+if  (_.size(args)!=2){
+     console.error("参数错误 ")
+     console.error("node solana3.js [数量] [模式 1:一组助记词 2:多组助记词]")
+     console.error("模式一： 生成一组助记词和 【数量】个钱包地址 ")
+     console.error("模式二： 生成【数量】组助记词 和 每组助记词的第一个地址")
+     exit()
+}
+
+
 let count = Number(args[0])
 let type = Number(args[1])
 let mode_dic = {
